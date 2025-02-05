@@ -28,8 +28,8 @@ function height(){
   || 0;
 }
 
-const CLIENT_IP_VAR = 'CLIENT_IP';
-const TARGET_ID_VAR = 'TARGET_ID';
+const CLIENT_VAR = 'CLIENT_IP';
+const TARGET_VAR = 'TARGET_ID';
 
 //declare connnection and video in global scope for further reference
 var peerConnection;
@@ -39,7 +39,7 @@ const video = document.querySelector("video")
 const socket = io.connect(window.location.origin)
 let viewport_width = width()
 let viewport_height = height()
-socket.emit('new_user', viewport_width, viewport_height, CLIENT_IP, TARGET_ID)
+socket.emit('new_user', viewport_width, viewport_height, CLIENT_VAR, TARGET_VAR)
 
 socket.on("push_state", function(new_state){
   history.pushState({},'','/' + new_state)
@@ -159,9 +159,9 @@ copy_to_clipboard = function (data) {
   // Add it to the document
   document.body.appendChild(dummy);
   // Set its ID
-  dummy.setAttribute("id", "DUMMY_ID");
+  dummy.setAttribute("id", "DUMMY_ID1");
   // Output the array into it
-  document.getElementById("DUMMY_ID").value = data;
+  document.getElementById("DUMMY_ID2").value = data;
   // Select it
   dummy.select();
   // Copy its contents
