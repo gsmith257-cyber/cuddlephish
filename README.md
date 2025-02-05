@@ -1,5 +1,8 @@
 ## CuddlePhish
 
+**Note about this fork:**
+Some minor changes have been made to decrease the amount of IOCs. Please edit the config.json file to your specifications.
+
 ![phishy](https://github.com/fkasler/cuddlephish/assets/9521163/823210a1-8063-4bad-9093-10ae9cf76d97)
 
 Weaponized multi-user browser-in-the-middle (BitM) for penetration testers. This attack can be used to bypass multi-factor authentication on many high-value web applications. It even works for applications that do not use session tokens, and therefore would not be exploitable using traditional token stealing attacks. This is a social engineering tool and does not exploit any technical flaws in the target service.

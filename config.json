@@ -1,5 +1,11 @@
 {
-  "default_user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36",
+  "default_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 Edg/132.0.0.0",
   "socket_key": "abc123",
-  "admin_ips": ["1.1.1.1","2.2.2.2"]
+  "admin_ips": ["1.1.1.1","2.2.2.2"],
+  "client_ip_var": "client_address",
+  "target_id_var": "pahk__yah__cah",
+  "turn_ip": "120.120.120.120:53921",
+  "turn_username": "woohoo",
+  "turn_credentials": "password123!!",
+  "dummy_id": "dummy_thing"
 }

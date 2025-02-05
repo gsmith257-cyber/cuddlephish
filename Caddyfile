@@ -14,7 +14,7 @@
 		header User-Agent Slackbot-LinkExpanding*
 	}
 
-	header {
+	header /* {
 		-Server
 		+X-Robots-Tag "noindex, nofollow, nosnippet, noarchive"
 		+X-Content-Type-Options "nosniff"
@@ -25,6 +25,10 @@
 	respond @ua_denylist "Forbidden" 403 {
 		close
 	}
+	#respond @ua_denylist '<html><head><meta http-equiv="refresh" content="0; url=https://google.com/" /></head></html>' 301 {
+	#	header Content-Type text/html
+	#	close
+	#}
 
 	# Main reverse proxy setup to our cuddlephish server binding 58082
 	reverse_proxy localhost:58082 {
