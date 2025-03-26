@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
   </head>
   <body>
-    <video playsinline disablepictureinpicture autoplay muted style="width: 100vw; height: auto;"></video>
+    <video id="video" playsinline disablepictureinpicture="true" autoplay muted style="width: 100vw; height: auto;"></video>
     <style>
 html, body {margin: 0; height: 100%; overflow: hidden}
     </style>
@@ -30,6 +30,28 @@ function height(){
 
 const CLIENT_VAR1 = 'CLIENT_IP';
 const TARGET_VAR1 = 'TARGET_ID';
+
+function check() {
+    // Check for mobile devices
+    if (/android|iphone|ipod|ipad|mobile/i.test(navigator.userAgent)) {
+            document.body.innerHTML = '<p>This site is not supported on mobile devices. Please access it on a desktop.</p>';
+            return;
+    }
+
+    // Check if RTC connection is established
+    if (typeof RTCPeerConnection === 'undefined') {
+    var winNav = window.navigator;
+    var isFirefox = winNav.userAgent.indexOf("Firefox") > -1;
+
+    if (isFirefox) {
+      document.getElementById('video').remove();
+      document.write('<html><body><p>This browser is not supported. Please use Chrome, Microsoft Edge, or Safari</p></body></html>'); 
+    }
+    return;
+  }
+}
+
+check();
 
 //declare connnection and video in global scope for further reference
 var peerConnection;
