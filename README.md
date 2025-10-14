@@ -1,7 +1,7 @@
 ## CuddlePhish
 
 **Note about this fork:**
-Some minor changes have been made to decrease the amount of IOCs. Please edit the config.json file to your specifications.
+Some minor changes have been made to decrease the amount of IOCs. Please edit the config.json file to your specifications. Also make sure to read [this.](https://specterops.io/blog/2023/11/07/phishing-with-dynamite/)
 
 ![phishy](https://github.com/fkasler/cuddlephish/assets/9521163/823210a1-8063-4bad-9093-10ae9cf76d97)
 
