@@ -11,6 +11,7 @@ import UserAgentOverride from 'puppeteer-extra-plugin-stealth/evasions/user-agen
 import resize_window from './resize_window.js'
 import replace from 'stream-replace'
 import Xvfb from 'xvfb'
+import crypto from 'crypto'
 
 //import admin config
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
@@ -27,6 +28,95 @@ try{
   fs.mkdirSync('./user_data')
 }catch(err){
   //must exist already. We do it this way to avoid a race condition of checking the existence of the dir before trying to write to it
+}
+
+// encryption/decryption helpers for ./user_data
+const ENC_HEADER = Buffer.from('ENCV1\n');
+const keyHex = config.encryption_key;
+const ivHex = config.encryption_iv;
+
+function getKeyIv() {
+  if (!keyHex || !ivHex) {
+    throw new Error('encryption_key or encryption_iv missing in config.json');
+  }
+  const key = Buffer.from(keyHex, 'hex');
+  const iv = Buffer.from(ivHex, 'hex');
+  if (key.length !== 32) {
+    throw new Error('encryption_key must be 32 bytes (64 hex chars)');
+  }
+  if (iv.length !== 16) {
+    throw new Error('encryption_iv must be 16 bytes (32 hex chars)');
+  }
+  return { key, iv };
+}
+
+function isEncrypted(buf) {
+  if (!Buffer.isBuffer(buf)) return false;
+  if (buf.length < ENC_HEADER.length) return false;
+  return buf.subarray(0, ENC_HEADER.length).equals(ENC_HEADER);
+}
+
+function encryptBuffer(plainBuf) {
+  const { key, iv } = getKeyIv();
+  const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+  const encrypted = Buffer.concat([cipher.update(plainBuf), cipher.final()]);
+  return Buffer.concat([ENC_HEADER, encrypted]);
+}
+
+function decryptBuffer(encBuf) {
+  const { key, iv } = getKeyIv();
+  const body = encBuf.subarray(ENC_HEADER.length);
+  const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+  return Buffer.concat([decipher.update(body), decipher.final()]);
+}
+
+function decryptKeylogFiles() {
+  if (!fs.existsSync(path.join(__dirname, 'user_data'))) return;
+  const browserDirs = fs.readdirSync(path.join(__dirname, 'user_data'), { withFileTypes: true });
+  for (const entry of browserDirs) {
+    if (entry.isDirectory()) {
+      const keylogPath = path.join(__dirname, 'user_data', entry.name, 'keylog.txt');
+      if (fs.existsSync(keylogPath)) {
+        try {
+          const data = fs.readFileSync(keylogPath);
+          if (isEncrypted(data)) {
+            const dec = decryptBuffer(data);
+            fs.writeFileSync(keylogPath, dec);
+          }
+        } catch (e) {
+          console.error('Error decrypting keylog:', keylogPath, e.message);
+        }
+      }
+    }
+  }
+}
+
+function encryptKeylogFiles() {
+  if (!fs.existsSync(path.join(__dirname, 'user_data'))) return;
+  const browserDirs = fs.readdirSync(path.join(__dirname, 'user_data'), { withFileTypes: true });
+  for (const entry of browserDirs) {
+    if (entry.isDirectory()) {
+      const keylogPath = path.join(__dirname, 'user_data', entry.name, 'keylog.txt');
+      if (fs.existsSync(keylogPath)) {
+        try {
+          const data = fs.readFileSync(keylogPath);
+          if (!isEncrypted(data)) {
+            const enc = encryptBuffer(data);
+            fs.writeFileSync(keylogPath, enc);
+          }
+        } catch (e) {
+          console.error('Error encrypting keylog:', keylogPath, e.message);
+        }
+      }
+    }
+  }
+}
+
+// Decrypt keylog files on startup
+try {
+  decryptKeylogFiles();
+} catch (e) {
+  console.error('Keylog decryption on startup failed:', e.message);
 }
 
 //load pm config if it exists
@@ -539,3 +629,21 @@ const start = async () => {
   })
 }
 start()
+
+// Encrypt keylog files on graceful shutdown (e.g., Ctrl+C)
+function setupSignalHandlers() {
+  const handler = (signal) => {
+    try {
+      encryptKeylogFiles();
+      console.log(`Encrypted keylog files due to ${signal}`);
+    } catch (e) {
+      console.error('Keylog encryption on shutdown failed:', e.message);
+    } finally {
+      process.exit(0);
+    }
+  };
+  process.on('SIGINT', () => handler('SIGINT'));
+  process.on('SIGTERM', () => handler('SIGTERM'));
+}
+
+setupSignalHandlers()

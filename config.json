@@ -7,5 +7,7 @@
   "turn_ip": "120.120.120.120:53921",
   "turn_username": "woohoo",
   "turn_credentials": "password123!!",
-  "dummy_id": "dummy_thing"
+  "dummy_id": "dummy_thing",
+  "encryption_key": "4b1f9b2a6e3d5c7f8a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3d4e5f607",
+  "encryption_iv": "00112233445566778899aabbccddeeff"
 }
